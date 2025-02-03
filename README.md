@@ -9,6 +9,7 @@
     - [Métricas de la aplicación con clústeres](#métricas-de-la-aplicación-con-clústeres)
 - [PM2](#pm2)
     - [Tarea](#tarea)
+- [Cuestión final](#cuestión-final)
 
 ## Preparación de la máquina
 
@@ -275,3 +276,11 @@ Muestra los registros (logs) en tiempo real de todas las aplicaciones gestionada
 
 Abre una interfaz de monitoreo interactiva en la terminal que muestra el estado en tiempo real de todas las aplicaciones gestionadas por PM2. Esta interfaz incluye información sobre el uso de CPU, memoria, y otros detalles de rendimiento de cada aplicación.
 <img src="./assets/21.png">
+
+## Cuestión final
+
+**¿Por qué en algunos casos concretos, la aplicación sin clusterizar puede tener mejores resultados?**
+
+Por tener menor latencia, lo que facilita respuestas más rápidas y genera menos sobrecarga.
+
+Esta menor latencia viene del hecho de que sea un solo proceso el que gestiona todas las solicitudes, de manera que se ahorran tiempo y recursos al no tener que gestionar la comunicación entre varios procesos y la distribución de la tarea entre los mismos.
