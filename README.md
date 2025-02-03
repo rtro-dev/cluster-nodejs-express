@@ -5,7 +5,10 @@
 - [Aplicación sin clústeres](#aplicación-sin-clústeres)
 - [Aplicación con clústeres](#aplicación-con-clústeres)
 - [Métricas de rendimiento](#métricas-de-rendimiento)
+    - [Métricas de la aplicación sin clústeres](#métricas-de-la-aplicación-sin-clústeres)
+    - [Métricas de la aplicación con clústeres](#métricas-de-la-aplicación-con-clústeres)
 - [PM2](#pm2)
+    - [Tarea](#tarea)
 
 ## Preparación de la máquina
 
@@ -180,7 +183,7 @@ Accediendo a *http://192.168.12.12:3000/api/50*:
 Se instala globalmente *loadtest* en */home/vagrant*:  
 `sudo npm install -g loadtest`
 
-### Aplicación sin clústeres
+### Métricas de la aplicación sin clústeres
 
 Se ejecuta la aplicación a probar:  
 `node noClusterApp/noCluster.js`
@@ -192,7 +195,7 @@ En otra terminal, accediendo a la máquina de nuevo, se realiza la prueba de car
 `loadtest http://localhost:3000/api/500000000 -n 1000 -c 100`
 <img src="./assets/13.png">
 
-### Aplicación con clústeres
+### Métricas de la aplicación con clústeres
 
 Se ejecuta la aplicación a probar:  
 `node clusterApp/cluster.js`
@@ -205,3 +208,70 @@ En otra terminal, accediendo a la máquina de nuevo, se realiza la prueba de car
 <img src="./assets/15.png">
 
 ## PM2
+
+Se instala globalmente:  
+`sudo npm install pm2 -g`
+
+Se utiliza con la aplicación sin cluster:  
+`pm2 start noClusterApp/noCluster.js -i 0`  
+*-i* le indicará a PM2 que inicie la aplicación en *cluster_mode*
+<img src="./assets/16.png">
+
+Se detiene la aplicación:  
+`pm2 stop noClusterApp/noCluster.js`
+<img src="./assets/17.png">
+
+Crear el archivo *ecosystem.config.js* para guardar la configuración:  
+`pm2 ecosystem`  
+Se edita:  
+`nano /home/vagrant/ecosystem.config.js`  
+Contenido:
+```bash  
+module.exports = {
+    apps: [{
+        name: "noClusterApp",
+        script: "noClusterApp/noCluster.js",
+        instances: 0,
+        exec_mode: "cluster",
+    },
+    ],
+};
+```
+
+Valores de *-i* o *instances*:
+- **0** o **max**: para "repartir" la aplicación entre todas las CPU (en desuso)
+- **-1**: para "repartir" la aplicación en todas las CPU - 1
+- **número**: para difundir la aplicación a través de un número concreto de CPU
+
+Ahora se puede ejecutar la aplicación con:  
+`pm2 start ecosystem.config.js`
+<img src="./assets/18.png">
+
+Comandos permitidos para este modo de ejecución:
+```bash
+$ pm2 start nombre_aplicacion
+$ pm2 restart nombre_aplicacion
+$ pm2 reload nombre_aplicacion
+$ pm2 stop nombre_aplicacion
+$ pm2 delete nombre_aplicacion
+
+# Cuando usemos el archivo Ecosystem:
+$ pm2 [start|restart|reload|stop|delete] ecosystem.config.js
+```
+
+### Tarea
+
+`pm2 ls`
+
+Muestra una lista de todas las aplicaciones gestionadas por PM2.
+<img src="./assets/19.png">
+
+`pm2 logs`
+
+Muestra los registros (logs) en tiempo real de todas las aplicaciones gestionadas por PM2.
+<img src="./assets/20.png">
+
+`pm2 monit noClusterApp/noCluster.js`
+
+Abre una interfaz de monitoreo interactiva en la terminal que muestra el estado en tiempo real de todas las aplicaciones gestionadas por PM2. Esta interfaz incluye información sobre el uso de CPU, memoria, y otros detalles de rendimiento de cada aplicación.
+<img src="./assets/21.png">
